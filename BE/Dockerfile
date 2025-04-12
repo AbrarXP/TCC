@@ -1,6 +1,16 @@
-FROM node:20-alpine
+FROM node:18
+
 WORKDIR /app
-COPY . .
+
+# HANYA salin file package*.json dulu
+COPY package*.json ./
+
+# Jalankan npm install DI DALAM CONTAINER
 RUN npm install
+
+# Baru salin semua file lain
+COPY . .
+
+# Port dan command
 EXPOSE 5000
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
