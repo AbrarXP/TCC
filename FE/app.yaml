@@ -3,7 +3,8 @@ service: fe  # Nama layanan App Engine, bisa diubah sesuai kebutuhan
 instance_class: F1  # Kelas instance untuk App Engine (F1 adalah kelas standar yang ringan)
 
 handlers:
-  - url: /
+  - url: /.*
+    script: auto
     static_files: index.php
     upload: index.php
 
