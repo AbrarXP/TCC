@@ -19,7 +19,7 @@ steps:
         "--image",
         "gcr.io/$PROJECT_ID/notes-be",
         "--timeout",
-        "9000s",
+        "3600s",
         "--port",
         "5000",
         "--region",
