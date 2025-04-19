@@ -1,9 +1,5 @@
-runtime: php81
-service: fe
-instance_class: F1
+runtime: php74  # Atau php80, tergantung versi PHP yang digunakan
 
 handlers:
-  - url: /.*
+  - url: /index.php  # Menangani URL untuk index.php
     script: auto
-
-default_expiration: "1h"
