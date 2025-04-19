@@ -18,7 +18,7 @@
             <p class="fw-bold fs-5 text-center"><i class='bx bxs-time'></i> Semua Catatan</p>
             <div class="overflow-y-scroll">
                 <?php
-                    $url = "http://localhost:5000/notes"; // URL backend
+                    $url = "https://notes-be-970101336895.us-central1.run.app/notes"; // URL backend
 
                     // Ambil data dari API
                     $response = file_get_contents($url);
