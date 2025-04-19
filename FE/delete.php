@@ -1,7 +1,7 @@
 <?php
 
 $id = $_GET['id'];
-$url = "http://localhost:5000/delete-note/$id"; // URL backend
+$url = "https://notes-be-970101336895.us-central1.run.app/delete-note/$id"; // URL backend
 
 
 // Konfigurasi HTTP request
