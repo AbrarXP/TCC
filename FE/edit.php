@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $catatan = $_POST['catatan']; // Isi catatan
 
     // URL API untuk update catatan
-    $url = "http://localhost:5000/edit-note/$id"; 
+    $url = "https://notes-be-970101336895.us-central1.run.app/edit-note/$id"; 
 
     // Data yang akan dikirim ke API dalam format JSON
     $data = json_encode([
