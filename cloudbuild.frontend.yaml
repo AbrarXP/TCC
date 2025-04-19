@@ -6,6 +6,9 @@ steps:
       - deploy
       - 'FE/app.yaml'
       - '--quiet'
+    dir: 'FE'  # Ganti dengan direktori frontend yang berisi app.yaml dan file HTML kamu
 
+options:
+  logging: CLOUD_LOGGING_ONLY  # Opsional: hanya mencatat log ke Google Cloud Logging
 options:
   logging: CLOUD_LOGGING_ONLY
