@@ -3,7 +3,7 @@
 $judul = $_POST['judul'];
 $catatan = $_POST['catatan'];
 
-$url = "https://notes-be-970101336895.us-central1.run.app//add-note"; // URL backend
+$url = "https://notes-be-970101336895.us-central1.run.app/add-note"; // URL backend
 $data = [
     "title" => $judul,
     "content" => $catatan
