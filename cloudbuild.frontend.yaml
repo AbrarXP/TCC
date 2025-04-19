@@ -4,7 +4,7 @@ steps:
     args:
       - app
       - deploy
-      - 'FE/app.yaml'
+      - 'app.yaml'
       - '--quiet'
     dir: 'FE'  # Ganti dengan direktori frontend yang berisi app.yaml dan file HTML kamu
 
