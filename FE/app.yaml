@@ -1,4 +1,4 @@
-runtime: php74  # Atau php80, tergantung versi PHP yang digunakan
+runtime: php84  # Atau php80, tergantung versi PHP yang digunakan
 
 handlers:
   - url: /index.php  # Menangani URL untuk index.php
