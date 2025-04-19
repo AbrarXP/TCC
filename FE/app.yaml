@@ -1,5 +1,11 @@
-runtime: php84  # Atau php80, tergantung versi PHP yang digunakan
+runtime: php81 # Menggunakan runtime standar untuk hosting PHP
+service: fe  # Nama layanan App Engine, bisa diubah sesuai kebutuhan
+instance_class: F1  # Kelas instance untuk App Engine (F1 adalah kelas standar yang ringan)
 
 handlers:
-  - url: /index.php  # Menangani URL untuk index.php
+  - url: /index.php
     script: auto
+    static_files: index.php
+    upload: index.php
+
+default_expiration: "1h"  # Waktu cache default
