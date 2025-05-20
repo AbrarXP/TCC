@@ -23,5 +23,5 @@ app.get("/", (req, res) => {
   res.send("Hello from backend! Cookie dikirim.");
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server connected on port ${PORT}`));
