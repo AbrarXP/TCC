@@ -15,9 +15,8 @@ app.use(NoteRoute);
 
 // Test endpoint untuk kirim cookie dummy
 app.get("/", (req, res) => {
-  const token = "tes-token-dummy";
-  res.cookie("token", token, {
-    httpOnly: false,         // ubah ke true jika ingin aman dari JS
+  res.cookie("token", "tes-token-dummy", {
+    httpOnly: true,
     sameSite: "None",
     secure: true
   });
