@@ -83,7 +83,7 @@ function edit_note(){
 }
 
 function delete_note(){
-    $id = $_GET['id'];
+    $id = $_POST['id'];
     $url = "https://notes-be-970101336895.us-central1.run.app/delete-note/$id"; // URL backend
 
     // Konfigurasi HTTP request
@@ -168,9 +168,7 @@ if (isset($_POST['submit-delete-note'])) {
                                             class="btn btn-outliend bg-warning text-white fw-bold">
                                             <i class='bx bx-pencil'></i> / <i class='bx bx-plus-medical'></i>
                                         </button>
-                                        <a name = "submit-delete-note" class="btn btn-outliend bg-danger text-white fw-bold" href="index.php?id=<?= $note['id'] ?>"><i class='bx bxs-trash'></i></a>
-                                        
-                                        <form action="index.php" method="POST" onsubmit="return confirm('Yakin ingin menghapus catatan ini?')">
+                                        <form action="index.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $note['id'] ?>">
                                             <button type="submit" name="submit-delete-note" class="btn btn-danger text-white fw-bold">
                                                 <i class='bx bxs-trash'></i>
