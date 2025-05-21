@@ -5,10 +5,7 @@ import NoteRoute from "./routes/NoteRoute.js";
 
 const app = express();
 
-app.use(cors({
-  origin: "https://fe-dot-hazel-airlock-451115-h0.et.r.appspot.com",
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(NoteRoute);
