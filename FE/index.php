@@ -40,8 +40,84 @@ function add_note()
     }
 }
 
+function edit_note(){
+
+    $id = $_POST['IdCatatan']; // ID catatan
+    $judul = $_POST['judul']; // Judul catatan
+    $catatan = $_POST['catatan']; // Isi catatan
+
+    // URL API untuk update catatan
+    $url = "https://notes-be-970101336895.us-central1.run.app/edit-note/$id"; 
+
+    // Data yang akan dikirim ke API dalam format JSON
+    $data = json_encode([
+        "title" => $judul,
+        "content" => $catatan
+    ]);
+
+    // Konfigurasi opsi HTTP request
+    $options = [
+        "http" => [
+            "method"  => "PUT", // Gunakan metode PUT untuk update data
+            "header"  => "Content-Type: application/json\r\n",
+            "content" => $data
+        ]
+    ];
+
+    // Buat stream context
+    $context = stream_context_create($options);
+
+    // Kirim request ke API
+    $response = file_get_contents($url, false, $context);
+
+    // Cek apakah request berhasil
+    if ($response === false) {
+        die("Gagal memperbarui catatan!");
+    }
+
+    // Konversi response JSON ke array PHP
+    $result = json_decode($response, true);
+
+    // Redirect kembali ke halaman utama setelah update
+    header("Location: index.php?msg=berhasilUpdate");
+}
+
+function delete_note(){
+    $id = $_GET['id'];
+    $url = "https://notes-be-970101336895.us-central1.run.app/delete-note/$id"; // URL backend
+
+    // Konfigurasi HTTP request
+    $options = [
+        "http" => [
+            "method" => "DELETE",
+            "header" => "Content-Type: application/json\r\n"
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    $response = file_get_contents($url, false, $context);
+
+    // Redirect setelah request selesai
+    header('location:index.php');
+
+    // Cek error
+    if ($response == false) {
+        header('location:index.php?msg=gagalHapus');
+    }else{
+        header('location:index.php?msg=berhasilHapus');
+    } 
+}
+
 if (isset($_POST['submit-add-note'])) {
     add_note();
+}
+
+if (isset($_POST['submit-edit-note'])) {
+    edit_note();
+}
+
+if (isset($_POST['submit-delete-note'])) {
+    delete_note();
 }
 
 ?>
@@ -92,7 +168,15 @@ if (isset($_POST['submit-add-note'])) {
                                             class="btn btn-outliend bg-warning text-white fw-bold">
                                             <i class='bx bx-pencil'></i> / <i class='bx bx-plus-medical'></i>
                                         </button>
-                                        <a class="btn btn-outliend bg-danger text-white fw-bold" href="delete.php?id=<?= $note['id'] ?>"><i class='bx bxs-trash'></i></a>
+                                        <a name = "submit-delete-note" class="btn btn-outliend bg-danger text-white fw-bold" href="index.php?id=<?= $note['id'] ?>"><i class='bx bxs-trash'></i></a>
+                                        
+                                        <form action="index.php" method="POST" onsubmit="return confirm('Yakin ingin menghapus catatan ini?')">
+                                            <input type="hidden" name="id" value="<?= $note['id'] ?>">
+                                            <button type="submit" name="submit-delete-note" class="btn btn-danger text-white fw-bold">
+                                                <i class='bx bxs-trash'></i>
+                                            </button>
+                                        </form>
+
                                     </div>
                         </div>
                         <hr>
@@ -140,7 +224,7 @@ if (isset($_POST['submit-add-note'])) {
                                 <label for="message">Catatan</label>
                                 <textarea class="form-control" id="textfieldCatatanEdit" name="catatan" rows="15" cols="30" style="resize:vertical"></textarea>
                             </div>
-                            <button type="submit" class="btn btn-danger">Submit</button>
+                            <button type="submit" class="btn btn-danger" name="submit-edit-note">Submit</button>
                         </form>
 
                     </div>
