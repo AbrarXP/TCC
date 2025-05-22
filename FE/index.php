@@ -173,6 +173,7 @@ function HalamanNote(){
                         if ($response === false) {
                             echo "Gagal mengambil data notes: " . curl_error($ch);
                             curl_close($ch);
+                            exit();
                         }
 
                         curl_close($ch);
@@ -299,6 +300,7 @@ function HalamanLogin(){
             if ($httpCode === 200 && isset($result['accessToken'])) {
                 $_SESSION['accessToken'] = $result['accessToken'];
                 header("Location: index.php");
+                exit();
             } else {
                 $error = $result['msg'] ?? "Login gagal dengan status $httpCode.";
             }
@@ -393,6 +395,7 @@ function HalamanRegister(){
             if ($httpCode === 201 && isset($result['msg'])) {
                 $pesan = $result['msg'];
                 header("Location: index.php?msg=$pesan");
+                exit();
             } else {
                 $error = $result['msg'] ?? "Login gagal dengan status $httpCode.";
             }
