@@ -1,11 +1,19 @@
 <?php
 
-function add_note()
+session_start();
+if(!isset($_SESSION['accessToken'])){
+    header("Location: login.php?msg=UnauthorizedAccess");
+}
+
+// $CurrentActiveUrl = "http://localhost:5000";
+$CurrentActiveUrl = "https://notes-be-970101336895.us-central1.run.app";
+
+function add_note(String $baseUrl)
 {
     $judul = $_POST['judul'];
     $catatan = $_POST['catatan'];
 
-    $url = "https://notes-be-970101336895.us-central1.run.app/add-note"; // URL backend
+    $url = "$baseUrl/add-note"; // URL backend
     $data = [
         "title" => $judul,
         "content" => $catatan
@@ -20,7 +28,8 @@ function add_note()
     // Set opsi cURL
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Content-Type: application/json"
+        "Content-Type: application/json",
+        'Authorization: Bearer ' . $_SESSION['accessToken'],
     ]);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
@@ -40,76 +49,106 @@ function add_note()
     }
 }
 
-function edit_note(){
+function edit_note(String $baseUrl){
 
     $id = $_POST['IdCatatan']; // ID catatan
     $judul = $_POST['judul']; // Judul catatan
     $catatan = $_POST['catatan']; // Isi catatan
 
-    // URL API untuk update catatan
-    $url = "https://notes-be-970101336895.us-central1.run.app/edit-note/$id"; 
+    $url = "$baseUrl/edit-note/$id";
 
-    // Data yang akan dikirim ke API dalam format JSON
     $data = json_encode([
         "title" => $judul,
         "content" => $catatan
     ]);
 
-    // Konfigurasi opsi HTTP request
-    $options = [
-        "http" => [
-            "method"  => "PUT", // Gunakan metode PUT untuk update data
-            "header"  => "Content-Type: application/json\r\n",
-            "content" => $data
-        ]
-    ];
+    $ch = curl_init($url);
 
-    // Buat stream context
-    $context = stream_context_create($options);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Content-Type: application/json",
+        "Authorization: Bearer " . $_SESSION['accessToken']
+    ]);
 
-    // Kirim request ke API
-    $response = file_get_contents($url, false, $context);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
 
-    // Cek apakah request berhasil
     if ($response === false) {
-        die("Gagal memperbarui catatan!");
+        $error = "Gagal update: $curlError";
+        header("Location: index.php?msg=" . urlencode($error));
+    } elseif ($httpCode !== 200) {
+        $error = "Gagal update. Kode HTTP: $httpCode";
+        header("Location: index.php?msg=" . urlencode($error));
+    } else {
+        header("Location: index.php?msg=berhasilUpdate");
     }
-
-    // Konversi response JSON ke array PHP
-    $result = json_decode($response, true);
-
-    // Redirect kembali ke halaman utama setelah update
-    header("Location: index.php?msg=berhasilUpdate");
+    exit;
 }
 
-function delete_note(){
+function delete_note(String $baseUrl){
     $id = $_POST['id'];
-    $url = "https://notes-be-970101336895.us-central1.run.app/delete-note/$id"; // URL backend
+    $url = "$baseUrl/delete-note/$id"; // URL backend
 
-    // Konfigurasi HTTP request
-    $options = [
-        "http" => [
-            "method" => "DELETE",
-            "header" => "Content-Type: application/json\r\n"
-        ]
-    ];
+    $ch = curl_init($url);
 
-    $context = stream_context_create($options);
-    $response = file_get_contents($url, false, $context);
+   // Set opsi cURL untuk metode DELETE dan header
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Content-Type: application/json",
+        "Authorization: Bearer " . $_SESSION['accessToken']
+    ]);
 
-    // Redirect setelah request selesai
-    header('location:index.php');
+    // Setting curl
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    $error = curl_error($ch);
+    curl_close($ch);
 
-    // Cek error
-    if ($response == false) {
-        header('location:index.php?msg=gagalHapus');
-    }else{
-        header('location:index.php?msg=berhasilHapus');
-    } 
+     // Cek apakah terjadi error
+    if ($response === false) {
+        $error = "Gagal menghubungi server: $curlError";
+        header("Location: index.php?msg=" . urlencode($error));
+    } else if ($httpCode !== 200) {
+        $error = "Gagal menghapus. Kode HTTP: $httpCode";
+        header("Location: index.php?msg=" . urlencode($error));
+    } else {
+        $msg = "berhasilHapus";
+        header("Location: index.php?msg=$msg");
+    }
+    exit;
+}
+
+function logout(){
+    // Hapus semua session
+    $_SESSION = []; // Kosongkan array session
+    session_unset(); // Hapus semua variabel session
+    session_destroy(); // Hancurkan session
+
+    // Redirect ke halaman login
+    header("Location: login.php?msg=SuccessfullyLoggedOut");
+    exit;
 }
 
 if (isset($_POST['submit-add-note'])) {
-    add_note();
+    add_note($CurrentActiveUrl);
+}
+
+if (isset($_POST['submit-edit-note'])) {
+    edit_note($CurrentActiveUrl);
+}
+
+if (isset($_POST['submit-delete-note'])) {
+    delete_note($CurrentActiveUrl);
+}
+
+if (isset($_POST['logout-btn'])) {
+    logout();
 }
 
 if (isset($_POST['submit-edit-note'])) {
@@ -137,20 +176,34 @@ if (isset($_POST['submit-delete-note'])) {
 <body style="background-color: rgb(31, 31, 31)">
 
     <div class="row justify-content-center" style="height: 100vh;">
+        <form method= "POST" action="">
+            <button type="submit" name="logout-btn" class = "btn btn-danger text-white fw-bold">Log out</button>
+        </form>
         <div class=" col col-9 d-flex justify-content-center align-items-center">
             <div class=" text-white card p-4" style="width: 70vw; height: 90vh; background-color:rgb(43, 43, 43)">
                 <p class="fw-bold fs-5 text-center"><i class='bx bxs-time'></i> Semua Catatan</p>
                 <div class="overflow-y-scroll">
                     <?php
                     $url = "https://notes-be-970101336895.us-central1.run.app/notes"; // URL backend
+                    // $url = "http://localhost:5000/notes";
 
-                    // Ambil data dari API
-                    $response = file_get_contents($url);
+                    // Inisialisasi cURL
+                    $ch = curl_init($url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'Authorization: Bearer ' . $_SESSION['accessToken'],
+                    ]);
 
-                    // Parse JSON ke array PHP
+                    $response = curl_exec($ch);
+                    if ($response === false) {
+                        echo "Gagal mengambil data notes: " . curl_error($ch);
+                        curl_close($ch);
+                        exit();
+                    }
+
+                    curl_close($ch);
+
                     $data = json_decode($response, true);
-
-                    // Simpan ke variabel
                     $notes = $data;
 
                     foreach ($notes as $note) {
@@ -168,6 +221,13 @@ if (isset($_POST['submit-delete-note'])) {
                                             class="btn btn-outliend bg-warning text-white fw-bold">
                                             <i class='bx bx-pencil'></i> / <i class='bx bx-plus-medical'></i>
                                         </button>
+                                        <form action="index.php" method="POST">
+                                            <input type="hidden" name="id" value="<?= $note['id'] ?>">
+                                            <button type="submit" name="submit-delete-note" class="btn btn-danger text-white fw-bold">
+                                                <i class='bx bxs-trash'></i>
+                                            </button>
+                                        </form>
+
                                         <form action="index.php" method="POST">
                                             <input type="hidden" name="id" value="<?= $note['id'] ?>">
                                             <button type="submit" name="submit-delete-note" class="btn btn-danger text-white fw-bold">
@@ -212,7 +272,7 @@ if (isset($_POST['submit-delete-note'])) {
                 <div class="overflow-y-scroll">
                     <div class="m-2">
 
-                        <form action="edit.php" method="POST">
+                        <form action="index.php" method="POST">
                             <input id="idCatatan" name="IdCatatan" type="hidden" class="form-control">
                             <div class="mb-3">
                                 <label for="judulcatatan" class="form-label">Judul Catatan</label>
@@ -261,6 +321,8 @@ if (isset($_POST['submit-delete-note'])) {
             }
         }
     </script>
+
+    
 
 </body>
 

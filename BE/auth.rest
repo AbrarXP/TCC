@@ -1,0 +1,65 @@
+### Register
+POST http://localhost:5000/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin123",
+  "email": "admi@gmail.com",
+  "password": "123"
+}
+
+###
+
+### Login
+POST http://localhost:5000/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "123"
+}
+
+###
+
+### Refresh Token
+GET http://localhost:5000/auth/refresh
+Cookie: refreshToken=PASTE_REFRESH_TOKEN_DISINI
+
+###
+
+### Logout
+DELETE http://localhost:5000/auth/logout
+Cookie: refreshToken=PASTE_REFRESH_TOKEN_DISINI
+
+###
+## Get all Note
+GET http://localhost:5000/notes
+Authorization: Bearer 
+
+### Tambah note - pakai accessToken
+POST http://localhost:5000/add-note
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3NDc4MzE1NDAsImV4cCI6MTc0NzgzMjQ0MH0.GU1jpruGsPE8XtydgshrpC9muGVwcIhDdDAInPCbaJ0
+Content-Type: application/json
+
+{
+  "title": "Dimitri Sovya Blyat",
+  "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua..."
+}
+
+###
+
+### Edit note (ID = 1) - pakai accessToken
+PUT http://localhost:5000/edit-note/1
+Authorization: Bearer PASTE_ACCESS_TOKEN_DISINI
+Content-Type: application/json
+
+{
+  "title": "Dimitri Sovya Blyat",
+  "content": "Konten sudah diperbarui, sekarang lebih ringkas."
+}
+
+###
+
+### Hapus note (ID = 1) - pakai accessToken
+DELETE http://localhost:5000/delete-note/1
+Authorization: Bearer PASTE_ACCESS_TOKEN_DISINI
